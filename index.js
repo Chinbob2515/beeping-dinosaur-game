@@ -773,6 +773,12 @@
             this.playSound(this.soundFx.HIT);
             vibrate(200);
 
+            console.log("HI!")
+            for (var ob of this.horizon.obstacles) {
+                ob.sound_source.disconnect(); //ob.sound_panner.disconnect();
+            }
+
+
             this.stop();
             this.crashed = true;
             this.distanceMeter.acheivement = false;
@@ -788,11 +794,19 @@
                 this.gameOverPanel.draw();
             }
 
+            // say out the results
+            var msg = new SpeechSynthesisUtterance()
+            msg.text = "Score: "+this.distanceMeter.getActualDistance(this.distanceRan)+". High score: "+this.distanceMeter.getActualDistance(this.highestScore)+". "
+
             // Update the high score.
             if (this.distanceRan > this.highestScore) {
                 this.highestScore = Math.ceil(this.distanceRan);
                 this.distanceMeter.setHighScore(this.highestScore);
-            }
+                msg.text += "That is a new high score!!"
+            } else {msg.text += "Loser."}
+
+            msg.voice = speechSynthesis.getVoices()[5]
+            window.speechSynthesis.speak(msg)
 
             // Reset the time clock.
             this.time = getTimeStamp();
@@ -1260,6 +1274,20 @@
         this.currentFrame = 0;
         this.timer = 0;
 
+        this.soundFx = Runner.instance_.audioContext
+        this.sound_source = this.soundFx.createOscillator()
+        this.sound_source.type = "square"
+        this.sound_source.frequency.setValueAtTime(440, this.soundFx.currentTime)
+        this.sound_panner = this.soundFx.createPanner()
+        this.sound_panner.distanceModel = "inverse"
+        this.sound_panner.maxDistance = Runner.instance_.tRex.config.WIDTH * 2
+        this.sound_panner.refDistance = 5
+
+        this.sound_source.connect(this.sound_panner)
+        this.sound_panner.connect(this.soundFx.destination)
+        //this.sound_source.connect(this.soundFx.destination)
+        this.sound_source.start()
+
         this.init(speed);
     };
 
@@ -1365,6 +1393,15 @@
                     }
                     this.xPos -= Math.floor((speed * FPS / 1000) * deltaTime);
 
+                    // Update sounds
+                    var dist1 = this.xPos - Runner.instance_.tRex.xPos - Runner.instance_.tRex.config.WIDTH;
+                    var dist = 10 - Math.floor(10 / (1 + dist1 / (Runner.instance_.tRex.config.WIDTH)))
+                    if (isFinite(dist1)) this.sound_panner.positionX.value = dist1  //Math.max(this.xPos - Runner.instance_.tRex.xPos - Runner.instance_.tRex.config.WIDTH * 2, 0)
+                    console.log([dist1, dist])
+                    //this.sound_panner.positionY.value = this.yPos/10
+
+                    if (isFinite(dist)) this.sound_source.frequency.value = 110 * dist
+
                     // Update frame
                     if (this.typeConfig.numFrames) {
                         this.timer += deltaTime;
@@ -1379,6 +1416,7 @@
 
                     if (!this.isVisible()) {
                         this.remove = true;
+                        this.sound_source.disconnect(); //this.sound_panner.disconnect();
                     }
                 }
             },
