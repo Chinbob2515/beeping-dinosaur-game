@@ -773,7 +773,6 @@
             this.playSound(this.soundFx.HIT);
             vibrate(200);
 
-            console.log("HI!")
             for (var ob of this.horizon.obstacles) {
                 ob.sound_source.disconnect(); //ob.sound_panner.disconnect();
             }
@@ -1274,10 +1273,10 @@
         this.currentFrame = 0;
         this.timer = 0;
 
-        this.soundFx = Runner.instance_.audioContext
+        this.soundFx = Runner.instance_.audioContext // || new AudioContext()
         this.sound_source = this.soundFx.createOscillator()
-        this.sound_source.type = "square"
-        this.sound_source.frequency.setValueAtTime(440, this.soundFx.currentTime)
+        this.sound_source.type = "square" //(type.type ==  'PTERODACTYL' ? (this.yPos == 100 ? "sine" : (this.yPos == 50 ? "triangle" : "sawtooth" )) : "square")
+        this.sound_source.frequency.value = 440
         this.sound_panner = this.soundFx.createPanner()
         this.sound_panner.distanceModel = "inverse"
         this.sound_panner.maxDistance = Runner.instance_.tRex.config.WIDTH * 2
@@ -1323,7 +1322,21 @@
                 if (Array.isArray(this.typeConfig.yPos)) {
                     var yPosConfig = IS_MOBILE ? this.typeConfig.yPosMobile :
                         this.typeConfig.yPos;
-                    this.yPos = yPosConfig[getRandomNum(0, yPosConfig.length - 1)];
+                    this. yPos = yPosConfig[getRandomNum(0, yPosConfig.length - 1)];
+        if (this.typeConfig.type == 'PTERODACTYL') {
+            switch (this.yPos) {
+            case 100:
+                this.sound_source.type = "sine";
+                break;
+            case 50:
+                this.sound_source.type = "triangle";
+                break;
+            default:
+                this.sound_source.type = "sawtooth";
+                break;
+            }
+        }
+
                 } else {
                     this.yPos = this.typeConfig.yPos;
                 }
@@ -1397,7 +1410,6 @@
                     var dist1 = this.xPos - Runner.instance_.tRex.xPos - Runner.instance_.tRex.config.WIDTH;
                     var dist = 10 - Math.floor(10 / (1 + dist1 / (Runner.instance_.tRex.config.WIDTH)))
                     if (isFinite(dist1)) this.sound_panner.positionX.value = dist1  //Math.max(this.xPos - Runner.instance_.tRex.xPos - Runner.instance_.tRex.config.WIDTH * 2, 0)
-                    console.log([dist1, dist])
                     //this.sound_panner.positionY.value = this.yPos/10
 
                     if (isFinite(dist)) this.sound_source.frequency.value = 110 * dist
@@ -1499,7 +1511,7 @@
             type: 'PTERODACTYL',
             width: 46,
             height: 40,
-            yPos: [100, 75, 50], // Variable height.
+            yPos: [25, 50, 100], // Variable height.
             yPosMobile: [100, 50], // Variable height mobile.
             multipleSpeed: 999,
             minSpeed: 8.5,
