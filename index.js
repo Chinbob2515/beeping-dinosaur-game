@@ -203,7 +203,11 @@
     Runner.keycodes = {
         JUMP: { '38': 1, '32': 1 },  // Up, spacebar
         DUCK: { '40': 1 },  // Down
-        RESTART: { '13': 1 }  // Enter
+        RESTART: { '13': 1 },  // Enter
+        SOUND1: {'81': 1}, // q
+        SOUND2: {'87': 1}, // w
+        SOUND3: {'69': 1}, // e
+        SOUND4: {'82': 1}, // r
     };
 
 
@@ -702,6 +706,76 @@
                     // Duck.
                     this.tRex.setDuck(true);
                 }
+            }
+            const SAMPLE_TIME = 0.3;
+            if (Runner.keycodes.SOUND1[e.keyCode]) {
+                let soundFx = Runner.instance_.audioContext
+                let sound_source = soundFx.createOscillator()
+                sound_source.type = "square" //(type.type ==  'PTERODACTYL' ? (yPos == 100 ? "sine" : (yPos == 50 ? "triangle" : "sawtooth" )) : "square")
+                sound_source.frequency.value = 440
+
+                let gain_node = soundFx.createGain()
+                gain_node.gain.value = 0.01;
+
+                sound_source.connect(gain_node)
+                gain_node.connect(soundFx.destination)
+
+                sound_source.start()
+                console.log("hi!");
+                setTimeout(function() {
+                    sound_source.disconnect();
+                }, 1000 * SAMPLE_TIME);
+            }
+            if (Runner.keycodes.SOUND2[e.keyCode]) {
+                let soundFx = Runner.instance_.audioContext
+                let sound_source = soundFx.createOscillator()
+                sound_source.type = "sine" //(type.type ==  'PTERODACTYL' ? (yPos == 100 ? "sine" : (yPos == 50 ? "triangle" : "sawtooth" )) : "square")
+                sound_source.frequency.value = 440
+
+                let gain_node = soundFx.createGain()
+                gain_node.gain.value = 0.01;
+
+                sound_source.connect(gain_node)
+                gain_node.connect(soundFx.destination)
+
+                sound_source.start()
+                setTimeout(function() {
+                    sound_source.disconnect();
+                }, 1000 * SAMPLE_TIME);
+            }
+            if (Runner.keycodes.SOUND3[e.keyCode]) {
+                let soundFx = Runner.instance_.audioContext
+                let sound_source = soundFx.createOscillator()
+                sound_source.type = "triangle" //(type.type ==  'PTERODACTYL' ? (yPos == 100 ? "sine" : (yPos == 50 ? "triangle" : "sawtooth" )) : "square")
+                sound_source.frequency.value = 440
+
+                let gain_node = soundFx.createGain()
+                gain_node.gain.value = 0.01;
+
+                sound_source.connect(gain_node)
+                gain_node.connect(soundFx.destination)
+
+                sound_source.start()
+                setTimeout(function() {
+                    sound_source.disconnect();
+                }, 1000 * SAMPLE_TIME);
+            }
+            if (Runner.keycodes.SOUND4[e.keyCode]) {
+                let soundFx = Runner.instance_.audioContext
+                let sound_source = soundFx.createOscillator()
+                sound_source.type = "sawtooth" //(type.type ==  'PTERODACTYL' ? (yPos == 100 ? "sine" : (yPos == 50 ? "triangle" : "sawtooth" )) : "square")
+                sound_source.frequency.value = 440
+
+                let gain_node = soundFx.createGain()
+                gain_node.gain.value = 0.01;
+
+                sound_source.connect(gain_node)
+                gain_node.connect(soundFx.destination)
+
+                sound_source.start()
+                setTimeout(function() {
+                    sound_source.disconnect();
+                }, 1000 * SAMPLE_TIME);
             }
         },
 
